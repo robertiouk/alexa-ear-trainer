@@ -77,14 +77,11 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
         final String endNote = String.format("%d.mid.mp3", interval.getEndPitch());
         final String ssmlInterval = "<speak>" +
                 String.format(NOTE_SSML, startNote) +
-                " <break /> " +
+                //" <break /> " +
                 String.format(NOTE_SSML, endNote) +
                 "</speak>";
 
         LOG.info("Responding with " + ssmlInterval);
-
-        final SsmlOutputSpeech outputSpeech = new SsmlOutputSpeech();
-        outputSpeech.setSsml(ssmlInterval);
 
         return SpeechHelper.getAskResponse(CARD_TITLE, ssmlInterval, true);
     }
@@ -105,6 +102,7 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
 
             return SpeechHelper.getTellResponse(CARD_TITLE, response, false);
         } catch (final IllegalArgumentException exception) {
+            LOG.info("Couldn't get a match for " + givenInterval);
             return SpeechHelper.getTellResponse(CARD_TITLE,
                     String.format("I'm sorry, I don't recognise %s as in interval", givenInterval),
                     false);

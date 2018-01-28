@@ -13,24 +13,24 @@ import java.util.stream.Stream;
  */
 public enum IntervalType {
 	Unison(0, Collections.singletonList("Unison")),
-	Minor2nd(1, Collections.singletonList("Minor Second")),
-	Major2nd(2, Collections.singletonList("Major Second")),
-	Minor3rd(3, Collections.singletonList("Minor Third")),
-	Major3rd(4, Collections.singletonList("Major Third")),
-	Perfect4th(5, Collections.singletonList("Perfect Fourth")),
-	Diminished5th(6, Arrays.asList("Diminished Fifth", "Tritone")),
-	Perfect5th(7, Collections.singletonList("Perfect Fifth")),
-	Minor6th(8, Collections.singletonList("Minor Sixth")),
-	Major6th(9, Collections.singletonList("Major Sixth")),
-	Minor7th(10, Collections.singletonList("Minor Seventh")),
-	Major7th(11, Collections.singletonList("Major Seventh")),
+	Minor2nd(1, Arrays.asList("Minor Second", "Minor 2nd")),
+	Major2nd(2, Arrays.asList("Major Second", "Major 2nd")),
+	Minor3rd(3, Arrays.asList("Minor Third", "Minor 3rd")),
+	Major3rd(4, Arrays.asList("Major Third", "Major 3rd")),
+	Perfect4th(5, Arrays.asList("Perfect Fourth", "Perfect 4th")),
+	Diminished5th(6, Arrays.asList("Diminished Fifth", "Tritone", "Diminished 5th")),
+	Perfect5th(7, Arrays.asList("Perfect Fifth", "Perfect 5th")),
+	Minor6th(8, Arrays.asList("Minor Sixth", "Minor 6th")),
+	Major6th(9, Arrays.asList("Major Sixth", "Major 6th")),
+	Minor7th(10, Arrays.asList("Minor Seventh", "Minor 7th")),
+	Major7th(11, Arrays.asList("Major Seventh", "Major 7th")),
 	Octave(12, Arrays.asList("Perfect Octave", "Octave")),
-	Minor9th(13, Collections.singletonList("Minor Ninth")),
-	Major9th(14, Collections.singletonList("Major Ninth")),
-	Augmented9th(15, Collections.singletonList("Augmented Ninth")),
-	Major10th(16, Collections.singletonList("Major Tenth")),
-	Perfect11th(17, Collections.singletonList("Perfect Eleventh")),
-	Major13th(21, Collections.singletonList("Major Thirteenth"));
+	Minor9th(13, Arrays.asList("Minor Ninth", "Minor 9th")),
+	Major9th(14, Arrays.asList("Major Ninth", "Major 9th")),
+	Augmented9th(15, Arrays.asList("Augmented Ninth", "Augmented 9th")),
+	Major10th(16, Arrays.asList("Major Tenth", "Major 10th")),
+	Perfect11th(17, Arrays.asList("Perfect Eleventh", "Perfect 11th")),
+	Major13th(21, Arrays.asList("Major Thirteenth", "Major 13th"));
 
 	private int value;
 	private List<String> aliases;
@@ -60,7 +60,9 @@ public enum IntervalType {
      */
     public static IntervalType fromAlias(final String alias) {
     	return Stream.of(IntervalType.values())
-				.filter(interval -> interval.aliases.contains(alias))
+				.filter(interval -> interval.aliases.stream()
+                        .map(String::toLowerCase)
+                        .anyMatch(name -> alias.toLowerCase().equals(name)))
 				.findAny()
 				.orElseThrow(() ->
 						new IllegalArgumentException(String.format("%s not recognised", alias)));
