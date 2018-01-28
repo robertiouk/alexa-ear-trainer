@@ -1,0 +1,20 @@
+Minor Second
+Major Second
+Minor Third
+Major Third
+Perfect Fourth
+Diminished Fifth
+Tritone
+Perfect Fifth
+Minor Sixth
+Major Sixth
+Minor Seventh
+Major Seventh
+Perfect Octave
+Octave
+Minor Ninth
+Major Ninth
+Augmented Ninth
+Major Tenth
+Perfect Eleventh
+Major Thirtheenth

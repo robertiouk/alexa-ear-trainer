@@ -1,0 +1,19 @@
+{
+  "intents": [
+    {
+      "intent": "IntervalIntent"
+    },
+    {
+      "intent": "AnswerIntent",
+      "slots": [
+        {
+          "name": "IntervalName",
+          "type": "LIST_OF_INTERVALS"
+        }
+      ]
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    }
+  ]
+}
