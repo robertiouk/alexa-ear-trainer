@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * Handles speech requests for the ear trainer.
@@ -38,7 +39,7 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
         LOG.info("onLaunch requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
                 session.getSessionId());
 
-        return getNextInterval();
+        return getNextInterval(Optional.empty());
     }
 
     @Override
@@ -51,11 +52,12 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
         final String intentName = (intent != null) ? intent.getName() : null;
 
         if ("IntervalIntent".equals(intentName)) {
-            return getNextInterval();
+            return getNextInterval(Optional.empty());
         } else if ("AnswerIntent".equals(intentName)) {
             return validateAnswer(intent);
-        }
-        else if ("AMAZON.HelpIntent".equals(intentName)) {
+        } else if ("AMAZON.StopIntent".equals(intentName)) {
+            return SpeechHelper.getTellResponse(CARD_TITLE, "Goodbye", false);
+        } else if ("AMAZON.HelpIntent".equals(intentName)) {
             return getHelpResponse();
         } else {
             return getUnknownResponse();
@@ -71,19 +73,22 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
         // any session cleanup logic would go here
     }
 
-    private SpeechletResponse getNextInterval() {
+    private SpeechletResponse getNextInterval(final Optional<String> pretext) {
         final Interval interval = intervalController.getNextInterval();
         final String startNote = String.format("%d.mid.mp3", interval.getStartPitch());
         final String endNote = String.format("%d.mid.mp3", interval.getEndPitch());
-        final String ssmlInterval = "<speak>" +
+        final String ssmlInterval =
                 String.format(NOTE_SSML, startNote) +
                 //" <break /> " +
-                String.format(NOTE_SSML, endNote) +
-                "</speak>";
+                String.format(NOTE_SSML, endNote);
 
-        LOG.info("Responding with " + ssmlInterval);
+        final String response = pretext.map(text -> "<speak>\n" + text +
+                "\n" + ssmlInterval +
+                "\n</speak>")
+                .orElse("<speak>\n" + ssmlInterval + "\n</speak>");
+        LOG.info("Responding with " + response);
 
-        return SpeechHelper.getAskResponse(CARD_TITLE, ssmlInterval, true);
+        return SpeechHelper.getAskResponse(CARD_TITLE, response, true);
     }
 
     private SpeechletResponse validateAnswer(final Intent intent) {
@@ -100,12 +105,15 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
                 response = String.format("Sorry, the correct answer is %s", currentInterval.getAlias());
             }
 
-            return SpeechHelper.getTellResponse(CARD_TITLE, response, false);
+            return getNextInterval(Optional.of(response));
+            //return SpeechHelper.getTellResponse(CARD_TITLE, response, false);
         } catch (final IllegalArgumentException exception) {
             LOG.info("Couldn't get a match for " + givenInterval);
-            return SpeechHelper.getTellResponse(CARD_TITLE,
+            /*return SpeechHelper.getTellResponse(CARD_TITLE,
                     String.format("I'm sorry, I don't recognise %s as in interval", givenInterval),
-                    false);
+                    false);*/
+            return getNextInterval(Optional.of(
+                    String.format("I'm sorry, I don't recognise %s as in interval", givenInterval)));
         }
     }
 

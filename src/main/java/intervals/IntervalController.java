@@ -11,9 +11,10 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  */
 public class IntervalController implements IntervalContainer, IntervalGenerator {
-	public static final int MAX_VALUE_EXCLUSIVE = 88;
-	public static final int MINIMUM_VALUE = 39;
-	/** The list of intervalTypes available. */
+	private static final int MAX_VALUE_EXCLUSIVE = 88;
+	private static final int MINIMUM_VALUE = 39;
+    private static final int MINIMUM_INTERVAL = 1;
+    /** The list of intervalTypes available. */
 	private List<IntervalType> intervalTypes = null;
 	/** The current generated interval. */
 	private Interval currentInterval = null;
@@ -55,8 +56,8 @@ public class IntervalController implements IntervalContainer, IntervalGenerator 
 	 * @return IntervalType
 	 */
 	private Interval pickRandomInterval() {
-		final Random rand = new Random();
-		final int randomIndex = rand.nextInt(intervalTypes.size());
+		final int randomIndex = ThreadLocalRandom.current()
+				.nextInt(MINIMUM_INTERVAL, intervalTypes.size());
 		final IntervalType intervalType = intervalTypes.get(randomIndex);
 
 		final int pitch = ThreadLocalRandom.current()
