@@ -1,6 +1,9 @@
 import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler;
+import com.amazonaws.services.lambda.runtime.Context;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,5 +39,4 @@ public class EarTrainerSpeechletRequestStreamHandler extends SpeechletRequestStr
                                                    final Set<String> supportedApplicationIds) {
         super(speechlet, supportedApplicationIds);
     }
-
 }

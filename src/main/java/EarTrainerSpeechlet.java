@@ -27,7 +27,7 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
 
     @Override
     public void onSessionStarted(SpeechletRequestEnvelope<SessionStartedRequest> requestEnvelope) {
-        LOG.info("onSessionStarted requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
+        LOG.info("onSessionStarted requd={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
                 requestEnvelope.getSession().getSessionId());
 
         intervalController.setIntervalTypes(Arrays.asList(IntervalType.values()));
