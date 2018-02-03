@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  */
 public class IntervalController implements IntervalContainer, IntervalGenerator {
-	private static final int MAX_VALUE_EXCLUSIVE = 88;
+	private static final int MAX_VALUE_EXCLUSIVE = 84;
 	private static final int MINIMUM_VALUE = 39;
     private static final int MINIMUM_INTERVAL = 1;
     /** The list of intervalTypes available. */

@@ -39,7 +39,7 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
         LOG.info("onLaunch requestId={}, sessionId={}", requestEnvelope.getRequest().getRequestId(),
                 session.getSessionId());
 
-        return getNextInterval(Optional.empty());
+        return askInterval(intervalController.getNextInterval(), Optional.empty());
     }
 
     @Override
@@ -52,10 +52,24 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
         final String intentName = (intent != null) ? intent.getName() : null;
 
         if ("IntervalIntent".equals(intentName)) {
-            return getNextInterval(Optional.empty());
+            return askInterval(intervalController.getNextInterval(), Optional.empty());
         } else if ("AnswerIntent".equals(intentName)) {
             return validateAnswer(intent);
+        } else if ("RepeatIntent".equals(intentName)) {
+            return askInterval(intervalController.getCurrentInterval(), Optional.empty());
+        } else if ("SkipIntent".equals(intentName)) {
+            return askInterval(intervalController.getNextInterval(), Optional.of(
+                    String.format("Ok. The correct answer was %s.", intervalController.getCurrentInterval()
+                            .getIntervalType()
+                            .getAlias())));
+        } else if ("DebugIntent".equals(intentName)) {
+            LOG.info(getIntervalSsml(intervalController.getCurrentInterval()));
+            return askInterval(intervalController.getNextInterval(), Optional.empty());
+        } else if ("AMAZON.RepeatIntent".equals(intentName)) {
+            return askInterval(intervalController.getCurrentInterval(), Optional.empty());
         } else if ("AMAZON.StopIntent".equals(intentName)) {
+            return SpeechHelper.getTellResponse(CARD_TITLE, "Goodbye", false);
+        } else if ("AMAZON.CancelIntent".equals(intentName)) {
             return SpeechHelper.getTellResponse(CARD_TITLE, "Goodbye", false);
         } else if ("AMAZON.HelpIntent".equals(intentName)) {
             return getHelpResponse();
@@ -73,14 +87,8 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
         // any session cleanup logic would go here
     }
 
-    private SpeechletResponse getNextInterval(final Optional<String> pretext) {
-        final Interval interval = intervalController.getNextInterval();
-        final String startNote = String.format("%d.mid.mp3", interval.getStartPitch());
-        final String endNote = String.format("%d.mid.mp3", interval.getEndPitch());
-        final String ssmlInterval =
-                String.format(NOTE_SSML, startNote) +
-                //" <break /> " +
-                String.format(NOTE_SSML, endNote);
+    private SpeechletResponse askInterval(final Interval interval, final Optional<String> pretext) {
+        final String ssmlInterval =getIntervalSsml(interval);
 
         final String response = pretext.map(text -> "<speak>\n" + text +
                 "\n" + ssmlInterval +
@@ -89,6 +97,13 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
         LOG.info("Responding with " + response);
 
         return SpeechHelper.getAskResponse(CARD_TITLE, response, true);
+    }
+
+    private String getIntervalSsml(final Interval interval) {
+        final String startNote = String.format("%d.mid.mp3", interval.getStartPitch());
+        final String endNote = String.format("%d.mid.mp3", interval.getEndPitch());
+        return String.format(NOTE_SSML, startNote) +
+                String.format(NOTE_SSML, endNote);
     }
 
     private SpeechletResponse validateAnswer(final Intent intent) {
@@ -105,14 +120,14 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
                 response = String.format("Sorry, the correct answer is %s", currentInterval.getAlias());
             }
 
-            return getNextInterval(Optional.of(response));
+            return askInterval(intervalController.getNextInterval(), Optional.of(response));
             //return SpeechHelper.getTellResponse(CARD_TITLE, response, false);
         } catch (final IllegalArgumentException exception) {
             LOG.info("Couldn't get a match for " + givenInterval);
             /*return SpeechHelper.getTellResponse(CARD_TITLE,
                     String.format("I'm sorry, I don't recognise %s as in interval", givenInterval),
                     false);*/
-            return getNextInterval(Optional.of(
+            return askInterval(intervalController.getCurrentInterval(), Optional.of(
                     String.format("I'm sorry, I don't recognise %s as in interval", givenInterval)));
         }
     }

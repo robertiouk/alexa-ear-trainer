@@ -13,6 +13,24 @@
       ]
     },
     {
+      "intent": "RepeatIntent"
+    },
+    {
+      "intent": "SkipIntent"
+    },
+    {
+      "intent": "DebugIntent"
+    },
+    {
+      "intent": "AMAZON.RepeatIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    },
+    {
       "intent": "AMAZON.HelpIntent"
     }
   ]

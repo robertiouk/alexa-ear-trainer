@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * The handler for AWS Lambda function for the Ear Trainer application.
  */
-public class EarTrainerSpeechletRequestStreamHandler extends SpeechletRequestStreamHandler {
+public class EarTrainerSpeechletRequestStreamHandler extends PingableRequestStreamHandler {
 
     private static final Set<String> supportedApplicationIds;
 

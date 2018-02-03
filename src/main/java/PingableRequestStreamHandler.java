@@ -4,6 +4,8 @@ import com.amazon.speech.speechlet.lambda.LambdaSpeechletRequestHandler;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +17,7 @@ import java.util.Set;
  * null speechlet request (generated from a scheduled CloudWatch trigger).
  */
 public class PingableRequestStreamHandler implements RequestStreamHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(PingableRequestStreamHandler.class);
     private final SpeechletV2 speechlet;
     private final SpeechletRequestHandler speechletRequestHandler;
 
@@ -35,20 +38,27 @@ public class PingableRequestStreamHandler implements RequestStreamHandler {
             throws IOException {
         byte[] serializedSpeechletRequest = IOUtils.toByteArray(input);
 
-        /*final SpeechletRequestEnvelope<?> requestEnvelope =
+        if (isApplicationPing(serializedSpeechletRequest)) {
+            // Don't do anything, this is just keeping the JVM warm
+            LOG.debug("pong!");
+        } else {
+            byte[] outputBytes;
+            try {
+                outputBytes =
+                        speechletRequestHandler.handleSpeechletCall(speechlet,
+                                serializedSpeechletRequest);
+            } catch (SpeechletRequestHandlerException | SpeechletException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            output.write(outputBytes);
+        }
+    }
+
+    private boolean isApplicationPing(final byte[] serializedSpeechletRequest) throws IOException {
+        final SpeechletRequestEnvelope<?> requestEnvelope =
                 SpeechletRequestEnvelope.fromJson(serializedSpeechletRequest);
 
-        final SpeechletRequest request = requestEnvelope.getRequest();*/
-
-        byte[] outputBytes;
-        try {
-            outputBytes =
-                    speechletRequestHandler.handleSpeechletCall(speechlet,
-                            serializedSpeechletRequest);
-        } catch (SpeechletRequestHandlerException | SpeechletException ex) {
-            throw new RuntimeException(ex);
-        }
-
-        output.write(outputBytes);
+        return requestEnvelope.getRequest() == null;
     }
 }

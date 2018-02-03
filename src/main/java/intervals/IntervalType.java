@@ -20,7 +20,7 @@ public enum IntervalType {
 	Perfect4th(5, Arrays.asList("Perfect Fourth", "Perfect 4th")),
 	Diminished5th(6, Arrays.asList("Diminished Fifth", "Tritone", "Diminished 5th")),
 	Perfect5th(7, Arrays.asList("Perfect Fifth", "Perfect 5th")),
-	Minor6th(8, Arrays.asList("Minor Sixth", "Minor 6th")),
+	Minor6th(8, Arrays.asList("Minor Sixth", "Minor 6th", "-6")),
 	Major6th(9, Arrays.asList("Major Sixth", "Major 6th")),
 	Minor7th(10, Arrays.asList("Minor Seventh", "Minor 7th")),
 	Major7th(11, Arrays.asList("Major Seventh", "Major 7th")),
@@ -29,8 +29,8 @@ public enum IntervalType {
 	Major9th(14, Arrays.asList("Major Ninth", "Major 9th")),
 	Augmented9th(15, Arrays.asList("Augmented Ninth", "Augmented 9th")),
 	Major10th(16, Arrays.asList("Major Tenth", "Major 10th")),
-	Perfect11th(17, Arrays.asList("Perfect Eleventh", "Perfect 11th")),
-	Major13th(21, Arrays.asList("Major Thirteenth", "Major 13th"));
+	Perfect11th(17, Arrays.asList("Perfect Eleventh", "Perfect 11th", "Perfect 11st")),
+	Major13th(21, Arrays.asList("Major Thirteenth", "Major 13th", "major 13rd"));
 
 	private int value;
 	private List<String> aliases;
