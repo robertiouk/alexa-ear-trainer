@@ -58,10 +58,9 @@ public class EarTrainerSpeechlet implements SpeechletV2 {
         } else if ("RepeatIntent".equals(intentName)) {
             return askInterval(intervalController.getCurrentInterval(), Optional.empty());
         } else if ("SkipIntent".equals(intentName)) {
+            final String currentInterval = intervalController.getCurrentInterval().getIntervalType().getAlias();
             return askInterval(intervalController.getNextInterval(), Optional.of(
-                    String.format("Ok. The correct answer was %s.", intervalController.getCurrentInterval()
-                            .getIntervalType()
-                            .getAlias())));
+                    String.format("Ok. The correct answer was %s.", currentInterval)));
         } else if ("DebugIntent".equals(intentName)) {
             LOG.info(getIntervalSsml(intervalController.getCurrentInterval()));
             return askInterval(intervalController.getNextInterval(), Optional.empty());
